@@ -1,0 +1,38 @@
+[
+  {
+    "keywords": ["fever", "temperature", "high temperature"],
+    "response": "Fever is commonly linked to infection, inflammation, or dehydration. Drink fluids, rest, and seek medical advice if the fever is high, persistent, or associated with breathing difficulty, confusion, or severe weakness."
+  },
+  {
+    "keywords": ["cough", "cold", "sore throat"],
+    "response": "A cough with cold symptoms is often viral and may improve with hydration, rest, and symptom relief. Medical evaluation is important if symptoms worsen, breathing becomes difficult, or the cough lasts longer than expected."
+  },
+  {
+    "keywords": ["headache", "migraine", "head pain"],
+    "response": "Headaches may result from stress, dehydration, infection, or migraine. Rest, hydration, and monitoring triggers can help, but urgent evaluation is needed for sudden severe pain, neurological symptoms, or repeated vomiting."
+  },
+  {
+    "keywords": ["rash", "rashes", "skin rash", "itching", "itchy skin", "allergy", "allergic rash"],
+    "response": "Skin rashes can happen due to allergy, irritation, infection, heat, medication reactions, or chronic skin conditions. Avoid scratching, note any new foods, medicines, soaps, or creams, and seek urgent medical care if there is breathing difficulty, facial swelling, fever, painful blistering, or rapid spreading."
+  },
+  {
+    "keywords": ["diabetes", "blood sugar", "glucose"],
+    "response": "Diabetes management typically includes glucose monitoring, medication adherence, balanced meals, exercise, and regular clinician review. Very high or very low blood sugar symptoms need prompt medical attention."
+  },
+  {
+    "keywords": ["blood pressure", "hypertension", "bp"],
+    "response": "High blood pressure often requires routine monitoring, lower sodium intake, exercise, and prescribed medicines. A clinician should guide treatment changes, especially if readings are repeatedly elevated."
+  },
+  {
+    "keywords": ["augmentin", "augmentin 625 duo", "amoxicillin", "clavulanic acid"],
+    "response": "Augmentin 625 Duo Tablet commonly contains amoxicillin with clavulanic acid and is used for bacterial infections when prescribed. Side effects can include nausea, diarrhea, abdominal discomfort, rash, and yeast overgrowth. It should only be used under medical supervision."
+  },
+  {
+    "keywords": ["azithral", "azithral 500", "azithromycin"],
+    "response": "Azithral 500 Tablet usually contains azithromycin and may be prescribed for certain bacterial infections. Possible side effects include nausea, stomach upset, loose stools, and rarely allergic reactions or heart rhythm concerns in susceptible patients."
+  },
+  {
+    "keywords": ["zincovit", "multivitamin", "vitamin supplement"],
+    "response": "Zincovit Tablet is commonly used as a nutritional supplement containing vitamins, minerals, and zinc. It may support recovery from dietary deficiency or fatigue, but dosing should follow clinician or label guidance."
+  }
+]

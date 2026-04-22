@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Med Chat - Your Empathetic Medical Assistant</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link href="/css/style.css" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "inverse-surface": "#2d3133",
+            "secondary-fixed-dim": "#b0c9e3",
+            "surface-container-low": "#f2f4f6",
+            "on-surface-variant": "#424753",
+            tertiary: "#005059",
+            "on-primary-container": "#ccdaff",
+            "inverse-primary": "#aec6ff",
+            "on-secondary-container": "#4d657b",
+            outline: "#727784",
+            "on-tertiary-container": "#8fe8f7",
+            "surface-bright": "#f7f9fb",
+            background: "#f7f9fb",
+            error: "#ba1a1a",
+            "on-primary-fixed-variant": "#004395",
+            "surface-dim": "#d8dadc",
+            "surface-container-high": "#e6e8ea",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-tertiary": "#ffffff",
+            "primary-fixed": "#d8e2ff",
+            "tertiary-fixed-dim": "#7ad4e2",
+            secondary: "#496177",
+            "primary-fixed-dim": "#aec6ff",
+            "inverse-on-surface": "#eff1f3",
+            "surface-container": "#eceef0",
+            primary: "#004497",
+            "primary-container": "#005bc5",
+            "on-secondary-fixed": "#011d31",
+            "secondary-container": "#c9e2fd",
+            "on-secondary-fixed-variant": "#31495e",
+            surface: "#f7f9fb",
+            "on-primary": "#ffffff",
+            "tertiary-fixed": "#97f0ff",
+            "tertiary-container": "#006a75",
+            "on-tertiary-fixed-variant": "#004f57",
+            "on-tertiary-fixed": "#001f24",
+            "surface-tint": "#005ac3",
+            "secondary-fixed": "#cce5ff",
+            "on-primary-fixed": "#001a42",
+            "on-background": "#191c1e",
+            "surface-variant": "#e0e3e5",
+            "surface-container-highest": "#e0e3e5",
+            "on-error": "#ffffff",
+            "on-surface": "#191c1e",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c2c6d5"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.75rem",
+            full: "9999px"
+          },
+          fontFamily: {
+            headline: ["Manrope"],
+            body: ["Inter"],
+            label: ["Inter"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .chat-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-container::-webkit-scrollbar-thumb {
+      background: #d8e2ff;
+      border-radius: 10px;
+    }
+    .voice-pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .voice-pulse span {
+      width: 0.35rem;
+      height: 0.35rem;
+      border-radius: 9999px;
+      background: #005bc5;
+      animation: voicePulse 1s infinite ease-in-out;
+      opacity: 0.45;
+    }
+    .voice-pulse span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    .voice-pulse span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+    @keyframes voicePulse {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.45;
+      }
+      40% {
+        transform: translateY(-4px);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed">
+  <div class="flex h-screen overflow-hidden">
+    <aside class="hidden md:flex flex-col h-screen w-72 bg-[#f7f9fb] p-4 space-y-2 fixed left-0 top-0 z-40 transition-all duration-200">
+      <div class="flex items-center gap-3 px-4 py-6">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20 overflow-hidden">
+          <img alt="Med Chat logo" class="w-full h-full object-cover" src="/assets/logo.png"/>
+        </div>
+        <div>
+          <h1 class="font-headline text-lg font-bold text-[#191c1e] leading-none">Dr. Curator</h1>
+          <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-1">Empathetic Assistant</p>
+        </div>
+      </div>
+
+      <div class="px-2 mb-6">
+        <button class="w-full py-4 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/10 transition-all active:scale-95" id="new-chat-button" type="button">
+          <span class="material-symbols-outlined text-xl">add</span>
+          New Consultation
+        </button>
+      </div>
+
+      <nav class="flex-1 space-y-1 overflow-y-auto">
+        <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-[#eceef0] transition-all rounded-xl" href="/pages/dashboard.html">
+          <span class="material-symbols-outlined">grid_view</span>
+          <span class="text-sm font-medium">Dashboard</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 bg-white text-primary font-bold rounded-xl shadow-sm transition-all" href="/pages/chat.html">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+          <span class="text-sm font-medium">Chat History</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-[#eceef0] transition-all rounded-xl" href="/pages/insights.html">
+          <span class="material-symbols-outlined">analytics</span>
+          <span class="text-sm font-medium">Insights</span>
+        </a>
+      </nav>
+
+      <div class="flex flex-col gap-1">
+        <h2 class="font-headline font-semibold text-xs uppercase tracking-wider text-outline px-4">Recent Chats</h2>
+        <div class="space-y-1 px-2" id="recent-chats"></div>
+      </div>
+
+      <div class="mt-4 p-4 rounded-2xl bg-surface-container-low flex items-center gap-3">
+        <img alt="User avatar" class="w-10 h-10 rounded-full object-cover" src="/assets/chat-dashboard-screen.png"/>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold truncate" id="profile-name">Med Chat User</p>
+          <p class="text-[10px] text-slate-500 truncate">Firebase Session Active</p>
+        </div>
+        <button class="text-slate-400 hover:text-primary" id="logout-button" type="button">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 md:ml-72 flex flex-col h-screen min-h-0 relative bg-surface">
+      <div class="absolute top-6 right-8 z-30">
+        <p class="text-xs text-slate-500 font-semibold" id="chat-status">Connecting...</p>
+      </div>
+
+      <div class="flex-1 min-h-0 overflow-y-auto chat-container p-6 md:p-12 space-y-10 pt-16 md:pt-12 after:content-[''] after:block after:h-[300px] after:shrink-0" id="messages">
+        <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
+          <div class="inline-block px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-xs font-bold tracking-wide uppercase">
+            Active Consultation
+          </div>
+          <h2 class="font-headline text-3xl md:text-5xl font-bold tracking-tight text-on-surface">How can I assist your health today?</h2>
+          <p class="text-slate-500 max-w-lg mx-auto leading-relaxed">Responses are grounded in your local medicine datasets using retrieval-augmented generation.</p>
+        </div>
+      </div>
+
+      <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-20 pointer-events-none">
+        <div class="max-w-4xl mx-auto w-full space-y-6 pointer-events-auto">
+          <div class="relative group">
+            <div class="absolute inset-0 bg-primary/5 rounded-full blur-xl group-focus-within:bg-primary/10 transition-all"></div>
+            <div class="relative flex items-center bg-surface-container-lowest border border-outline-variant/20 rounded-full p-2 pr-4 shadow-xl shadow-on-surface/5 focus-within:border-primary transition-all">
+              <button class="p-3 text-slate-400 hover:text-primary transition-colors rounded-full disabled:opacity-40 disabled:cursor-not-allowed" id="voice-toggle-button" type="button" aria-label="Start voice input">
+                <span class="material-symbols-outlined" id="voice-toggle-icon">mic</span>
+              </button>
+              <button class="p-3 text-slate-400 hover:text-primary transition-colors rounded-full disabled:opacity-40 disabled:cursor-not-allowed" id="voice-replay-button" type="button" aria-label="Replay voice response">
+                <span class="material-symbols-outlined">volume_up</span>
+              </button>
+              <input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface py-4 px-2 placeholder:text-slate-400 font-medium" id="chat-input" placeholder="Ask your medical question..." type="text"/>
+              <button class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all" id="send-button" type="button">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between px-4 pt-1">
+            <p class="text-xs font-semibold text-slate-500" id="voice-state-text">Voice ready</p>
+            <div class="hidden items-center gap-1" id="voice-wave">
+              <div class="voice-pulse" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 py-3 bg-surface-container/60 rounded-xl backdrop-blur-md">
+            <p class="text-[11px] text-slate-500 text-center leading-relaxed font-medium">
+              <span class="text-tertiary font-bold uppercase tracking-widest text-[9px] mr-2">Notice</span>
+              Med Chat provides general information only and is not a substitute for professional medical advice.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/js/chat.js"></script>
+</body>
+</html>
