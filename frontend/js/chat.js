@@ -23,6 +23,8 @@ const voiceReplayButton = document.getElementById("voice-replay-button");
 const voiceToggleIcon = document.getElementById("voice-toggle-icon");
 const voiceStateText = document.getElementById("voice-state-text");
 const voiceWave = document.getElementById("voice-wave");
+const ttsMuteButton = document.getElementById("tts-mute-button");
+const ttsMuteIcon = document.getElementById("tts-mute-icon");
 
 const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -33,6 +35,7 @@ let voiceState = "idle";
 let recognition = null;
 let lastAiReply = "";
 let lastSpokenText = "";
+let ttsMuted = false;
 
 function escapeHtml(value) {
   return `${value}`
@@ -204,7 +207,7 @@ function pickVoice() {
 }
 
 function speakText(text) {
-  if (!("speechSynthesis" in window) || !text) {
+  if (!("speechSynthesis" in window) || !text || ttsMuted) {
     return;
   }
 
@@ -386,12 +389,26 @@ chatInput.addEventListener("keydown", (event) => {
 
 voiceToggleButton.addEventListener("click", toggleVoiceInput);
 
+ttsMuteButton.addEventListener("click", () => {
+  ttsMuted = !ttsMuted;
+  ttsMuteIcon.textContent = ttsMuted ? "volume_off" : "volume_up";
+  ttsMuteButton.classList.toggle("text-error", ttsMuted);
+  
+  if (ttsMuted) {
+    stopSpeaking();
+  }
+});
+
 voiceReplayButton.addEventListener("click", () => {
   if (!lastAiReply) {
     return;
   }
 
+  // Allow replay even if muted (explicit action)
+  const tempMute = ttsMuted;
+  ttsMuted = false;
   speakText(lastAiReply);
+  ttsMuted = tempMute;
 });
 
 suggestionButtons.forEach((button) => {
