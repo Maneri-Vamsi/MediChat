@@ -19,7 +19,6 @@ const profileName = document.getElementById("profile-name");
 const chatStatus = document.getElementById("chat-status");
 const suggestionButtons = document.querySelectorAll("[data-suggestion]");
 const voiceToggleButton = document.getElementById("voice-toggle-button");
-const voiceReplayButton = document.getElementById("voice-replay-button");
 const voiceToggleIcon = document.getElementById("voice-toggle-icon");
 const voiceStateText = document.getElementById("voice-state-text");
 const voiceWave = document.getElementById("voice-wave");
@@ -213,7 +212,6 @@ function speakText(text) {
 
   stopSpeaking();
   lastSpokenText = text;
-  voiceReplayButton.disabled = false;
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "en-US";
@@ -350,7 +348,6 @@ async function sendMessage() {
 
     const replyText = `${data.reply || "No response received."}`;
     lastAiReply = replyText;
-    voiceReplayButton.disabled = false;
     createBubble("ai", escapeHtml(replyText));
     baseStatus =
       data.source === "openrouter"
@@ -399,18 +396,6 @@ ttsMuteButton.addEventListener("click", () => {
   }
 });
 
-voiceReplayButton.addEventListener("click", () => {
-  if (!lastAiReply) {
-    return;
-  }
-
-  // Allow replay even if muted (explicit action)
-  const tempMute = ttsMuted;
-  ttsMuted = false;
-  speakText(lastAiReply);
-  ttsMuted = tempMute;
-});
-
 suggestionButtons.forEach((button) => {
   button.addEventListener("click", () => {
     chatInput.value = button.dataset.suggestion || "";
@@ -431,7 +416,6 @@ newChatButton.addEventListener("click", () => {
   baseStatus = "New consultation started";
   setVoiceState("idle");
   lastAiReply = "";
-  voiceReplayButton.disabled = true;
 });
 
 logoutButton.addEventListener("click", async () => {
@@ -440,15 +424,6 @@ logoutButton.addEventListener("click", async () => {
   window.location.href = "/pages/login.html";
 });
 
-if ("speechSynthesis" in window) {
-  window.speechSynthesis.onvoiceschanged = () => {
-    if (lastSpokenText && !window.speechSynthesis.speaking) {
-      voiceReplayButton.disabled = false;
-    }
-  };
-}
-
-voiceReplayButton.disabled = true;
 updateStatus();
 
 const user = await requireAuth("/pages/login.html");
