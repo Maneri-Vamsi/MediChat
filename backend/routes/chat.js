@@ -80,9 +80,15 @@ async function loadDiseaseDataset() {
   return cachedDiseaseDataset;
 }
 
-async function callOpenRouter(message, context) {
+async function callOpenRouter(message, context, history = []) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) throw new Error("API Key missing");
+
+  // Format history for OpenRouter (role: user/assistant)
+  const historyMessages = history.slice(-5).map(msg => ({
+    role: msg.role === "user" ? "user" : "assistant",
+    content: msg.content
+  }));
 
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
@@ -111,6 +117,7 @@ async function callOpenRouter(message, context) {
           5. Keep responses structured and easy to read (use bullet points if needed).
           6. If symptoms are severe (chest pain, breathing trouble), urge the user to seek emergency care immediately.`
         },
+        ...historyMessages,
         { role: "user", content: message }
       ]
     })
@@ -123,6 +130,8 @@ async function callOpenRouter(message, context) {
 router.post("/", async (req, res) => {
   try {
     const message = `${req.body?.message || ""}`.trim();
+    const history = req.body?.history || [];
+
     if (!message) return res.status(400).json({ error: "Message is required." });
 
     const [medicines, diseases] = await Promise.all([loadMedicineDataset(), loadDiseaseDataset()]);
@@ -132,7 +141,7 @@ router.post("/", async (req, res) => {
       disease_patterns: diseases
     };
 
-    const reply = await callOpenRouter(message, context);
+    const reply = await callOpenRouter(message, context, history);
 
     return res.json({
       reply,

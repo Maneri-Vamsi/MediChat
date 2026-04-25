@@ -326,10 +326,16 @@ async function sendMessage() {
   const loadingNode = showThinking();
 
   try {
+    const activeThread = getActiveThread() || { messages: [] };
+    const chatHistory = activeThread.messages.slice(-5);
+
     const response = await fetch("/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({ 
+        message: text,
+        history: chatHistory
+      })
     });
 
     const data = await response.json();
