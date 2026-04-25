@@ -19,9 +19,11 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "'unsafe-inline'", "cdn.tailwindcss.com", "https://*.firebaseapp.com", "https://*.googleapis.com"],
-      "connect-src": ["'self'", "https://*.firebaseio.com", "https://*.googleapis.com", "https://openrouter.ai"],
-      "img-src": ["'self'", "data:", "https://*.googleusercontent.com"]
+      "script-src": ["'self'", "'unsafe-inline'", "cdn.tailwindcss.com", "https://*.firebaseapp.com", "https://*.googleapis.com", "https://www.gstatic.com"],
+      "connect-src": ["'self'", "https://*.firebaseio.com", "https://*.googleapis.com", "https://openrouter.ai", "https://www.gstatic.com"],
+      "img-src": ["'self'", "data:", "https://*.googleusercontent.com", "https://www.gstatic.com", "https://*.firebaseapp.com"],
+      "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "cdn.tailwindcss.com"],
+      "font-src": ["'self'", "https://fonts.gstatic.com"]
     }
   }
 }));
