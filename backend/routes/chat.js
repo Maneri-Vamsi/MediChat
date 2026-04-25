@@ -13,47 +13,24 @@ const diseaseDatasetPath = path.join(__dirname, "..", "dataset", "Disease_sympto
 let cachedMedicineDataset = null;
 let cachedDiseaseDataset = null;
 
-function parseCsvLine(line) {
-  const values = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let index = 0; index < line.length; index += 1) {
-    const char = line[index];
-    const next = line[index + 1];
-
-    if (char === '"') {
-      if (inQuotes && next === '"') {
-        current += '"';
-        index += 1;
-      } else {
-        inQuotes = !inQuotes;
-      }
-      continue;
-    }
-
-    if (char === "," && !inQuotes) {
-      values.push(current.trim());
-      current = "";
-      continue;
-    }
-
-    current += char;
+// Pre-load datasets for faster responses
+async function initializeDatasets() {
+  try {
+    const [medicines, diseases] = await Promise.all([
+      readFile(medicineDatasetPath, "utf8").then(JSON.parse),
+      loadDiseaseDataset()
+    ]);
+    cachedMedicineDataset = medicines;
+    console.log("Datasets pre-loaded successfully");
+  } catch (error) {
+    console.error("Error pre-loading datasets:", error);
   }
-
-  values.push(current.trim());
-  return values;
 }
 
-async function loadMedicineDataset() {
-  if (cachedMedicineDataset) return cachedMedicineDataset;
-  const raw = await readFile(medicineDatasetPath, "utf8");
-  cachedMedicineDataset = JSON.parse(raw);
-  return cachedMedicineDataset;
-}
+// Start pre-loading immediately
+initializeDatasets();
 
 async function loadDiseaseDataset() {
-  if (cachedDiseaseDataset) return cachedDiseaseDataset;
   const raw = await readFile(diseaseDatasetPath, "utf8");
   const lines = raw.split(/\r?\n/).filter(Boolean);
   const headers = parseCsvLine(lines[0]);
@@ -76,15 +53,13 @@ async function loadDiseaseDataset() {
     });
   });
 
-  cachedDiseaseDataset = Array.from(diseaseMap.values());
-  return cachedDiseaseDataset;
+  return Array.from(diseaseMap.values());
 }
 
 async function callOpenRouter(message, context, history = []) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) throw new Error("API Key missing");
 
-  // Format history for OpenRouter (role: user/assistant)
   const historyMessages = history.slice(-5).map(msg => ({
     role: msg.role === "user" ? "user" : "assistant",
     content: msg.content
@@ -134,11 +109,19 @@ router.post("/", async (req, res) => {
 
     if (!message) return res.status(400).json({ error: "Message is required." });
 
-    const [medicines, diseases] = await Promise.all([loadMedicineDataset(), loadDiseaseDataset()]);
+    // Use pre-loaded datasets if available, otherwise load them
+    if (!cachedMedicineDataset || !cachedDiseaseDataset) {
+      const [medicines, diseases] = await Promise.all([
+        readFile(medicineDatasetPath, "utf8").then(JSON.parse),
+        loadDiseaseDataset()
+      ]);
+      cachedMedicineDataset = medicines;
+      cachedDiseaseDataset = diseases;
+    }
     
     const context = {
-      available_medicines: medicines,
-      disease_patterns: diseases
+      available_medicines: cachedMedicineDataset,
+      disease_patterns: cachedDiseaseDataset
     };
 
     const reply = await callOpenRouter(message, context, history);

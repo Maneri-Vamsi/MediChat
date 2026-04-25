@@ -446,16 +446,20 @@ if (sidebarOverlay) {
   });
 }
 
+// Initialize status and UI immediately
 updateStatus();
 
+// Non-blocking initialization
 const user = await requireAuth("/pages/login.html");
 if (user) {
   profileName.textContent = user.displayName || "Med Chat User";
   syncThread();
   document.body.classList.add("ready");
+  
   const activeThread = ensureActiveThread();
   renderThread(activeThread);
   renderRecentChats();
+  
   baseStatus = "Connected";
   updateStatus();
 }
