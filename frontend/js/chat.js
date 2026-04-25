@@ -45,34 +45,7 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function updateStatus() {
-  if (voiceState === "listening") {
-    chatStatus.textContent = "Listening...";
-    voiceStateText.textContent = "Listening...";
-    voiceWave.classList.remove("hidden");
-    voiceToggleIcon.textContent = "mic_off";
-    voiceToggleButton.classList.add("text-primary", "bg-primary/10");
-    voiceToggleButton.setAttribute("aria-pressed", "true");
-    return;
-  }
 
-  if (voiceState === "processing") {
-    chatStatus.textContent = "Processing voice...";
-    voiceStateText.textContent = "Processing...";
-    voiceWave.classList.remove("hidden");
-    voiceToggleIcon.textContent = "mic";
-    voiceToggleButton.classList.remove("text-primary", "bg-primary/10");
-    voiceToggleButton.setAttribute("aria-pressed", "false");
-    return;
-  }
-
-  chatStatus.textContent = baseStatus;
-  voiceStateText.textContent = "Voice ready";
-  voiceWave.classList.add("hidden");
-  voiceToggleIcon.textContent = "mic";
-  voiceToggleButton.classList.remove("text-primary", "bg-primary/10");
-  voiceToggleButton.setAttribute("aria-pressed", "false");
-}
 
 function setVoiceState(nextState) {
   voiceState = nextState;
@@ -430,9 +403,46 @@ const chatStatusMobile = document.getElementById("chat-status-mobile");
 
 function updateStatus() {
   const statusText = baseStatus || "Connected";
+  
+  if (voiceState === "listening") {
+    const listenText = "Listening...";
+    if (chatStatus) chatStatus.textContent = listenText;
+    if (chatStatusMobile) chatStatusMobile.textContent = listenText;
+    if (voiceStateText) voiceStateText.textContent = listenText;
+    if (voiceWave) voiceWave.classList.remove("hidden");
+    if (voiceToggleIcon) voiceToggleIcon.textContent = "mic_off";
+    if (voiceToggleButton) {
+      voiceToggleButton.classList.add("text-primary", "bg-primary/10");
+      voiceToggleButton.setAttribute("aria-pressed", "true");
+    }
+    return;
+  }
+
+  if (voiceState === "processing") {
+    const procText = "Processing voice...";
+    if (chatStatus) chatStatus.textContent = procText;
+    if (chatStatusMobile) chatStatusMobile.textContent = procText;
+    if (voiceStateText) voiceStateText.textContent = "Processing...";
+    if (voiceWave) voiceWave.classList.remove("hidden");
+    if (voiceToggleIcon) voiceToggleIcon.textContent = "mic";
+    if (voiceToggleButton) {
+      voiceToggleButton.classList.remove("text-primary", "bg-primary/10");
+      voiceToggleButton.setAttribute("aria-pressed", "false");
+    }
+    return;
+  }
+
   if (chatStatus) chatStatus.textContent = statusText;
   if (chatStatusMobile) chatStatusMobile.textContent = statusText;
+  if (voiceStateText) voiceStateText.textContent = "Voice ready";
+  if (voiceWave) voiceWave.classList.add("hidden");
+  if (voiceToggleIcon) voiceToggleIcon.textContent = "mic";
+  if (voiceToggleButton) {
+    voiceToggleButton.classList.remove("text-primary", "bg-primary/10");
+    voiceToggleButton.setAttribute("aria-pressed", "false");
+  }
 }
+
 
 if (sidebarOpenTrigger) {
   sidebarOpenTrigger.addEventListener("click", () => {
@@ -453,7 +463,8 @@ updateStatus();
 const user = await requireAuth("/pages/login.html");
 if (user) {
   profileName.textContent = user.displayName || "Med Chat User";
-  syncThread();
+  // syncThread(); // Removed as it was undefined and causing a crash
+
   document.body.classList.add("ready");
   
   const activeThread = ensureActiveThread();

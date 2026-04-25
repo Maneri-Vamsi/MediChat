@@ -27,8 +27,28 @@ async function initializeDatasets() {
   }
 }
 
+function parseCsvLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === "," && !inQuotes) {
+      result.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
 // Start pre-loading immediately
 initializeDatasets();
+
 
 async function loadDiseaseDataset() {
   const raw = await readFile(diseaseDatasetPath, "utf8");
