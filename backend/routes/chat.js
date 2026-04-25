@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const medicineDatasetPath = path.join(__dirname, "..", "dataset", "data.json");
-const diseaseDatasetPath = path.join(__dirname, "..", "..", "..", "Disease_symptom_and_patient_profile_dataset.csv");
+const diseaseDatasetPath = path.join(__dirname, "..", "dataset", "Disease_symptom_and_patient_profile_dataset.csv");
 
 const STOPWORDS = new Set([
   "a",
@@ -47,7 +47,7 @@ const GREETINGS = [
   /^(greetings|greeting)$/
 ];
 
-const MEDICINE_QUERY_TERMS = ["used for", "use of", "what is", "medicine", "drug", "tablet", "capsule", "syrup"];
+const MEDICINE_QUERY_TERMS = ["used for", "use for", "use of", "what is", "medicine", "drug", "tablet", "capsule", "syrup"];
 const SYMPTOM_QUERY_TERMS = ["headache", "fever", "body pain", "cold", "cough", "acidity", "stomach pain", "nausea", "vomiting", "rash", "itching"];
 const DISEASE_INFO_TERMS = ["symptoms of", "signs of", "about", "tell me about", "what are symptoms of", "cause of", "treatment for"];
 const SEVERE_SYMPTOMS = ["chest pain", "unconscious", "bleeding", "severe breathing", "shortness of breath", "stroke", "seizure", "fainting"];
@@ -55,6 +55,14 @@ const SEVERE_SYMPTOMS = ["chest pain", "unconscious", "bleeding", "severe breath
 const COMMON_MEDICINES = {
   paracetamol: {
     usedFor: "fever and mild pain relief",
+    caution: "do not exceed the label dose and avoid combining it with other paracetamol products"
+  },
+  dolo: {
+    usedFor: "fever and body pain relief (contains paracetamol)",
+    caution: "do not exceed the label dose and avoid combining it with other paracetamol products"
+  },
+  "dolo 650": {
+    usedFor: "fever and body pain relief (contains paracetamol)",
     caution: "do not exceed the label dose and avoid combining it with other paracetamol products"
   },
   ibuprofen: {
@@ -380,6 +388,45 @@ function buildDiseaseInfoResponse(diseaseName, diseaseDataset) {
   ].join("\n");
 }
 
+async function callOpenRouter(message, context = "") {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://medichat.onrender.com",
+        "X-Title": "MediChat"
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.0-flash-001",
+        messages: [
+          {
+            role: "system",
+            content: `You are a professional medical assistant. Use the following context to answer the user's question. 
+            Keep answers concise, safe, and professional. 
+            If the context doesn't contain the answer, say you don't know but provide general safe medical advice.
+            ALWAYS include a medical disclaimer.
+            Context: ${context}`
+          },
+          { role: "user", content: message }
+        ]
+      })
+    });
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || null;
+  } catch (error) {
+    console.error("OpenRouter Error:", error);
+    return null;
+  }
+}
+
 function buildGeneralResponse(message) {
   return `I can help with symptoms, medicines, and disease questions. Please ask about a medical concern, and I will keep the answer simple and safe.`;
 }
@@ -402,19 +449,36 @@ router.post("/", async (req, res) => {
     const [medicineDataset, diseaseDataset] = await Promise.all([loadMedicineDataset(), loadDiseaseDataset()]);
     const intent = detectIntent(message, diseaseDataset, medicineDataset);
 
-    let reply = buildGeneralResponse(message);
+    let reply = "";
+    let context = "";
+    let source = "dataset";
 
     if (intent.intent === "SYMPTOM_QUERY") {
       reply = buildSymptomQueryResponse(message);
+      context = reply;
     } else if (intent.intent === "MEDICINE_QUERY") {
       reply = buildMedicineQueryResponse(message, medicineDataset);
+      context = reply;
     } else if (intent.intent === "DISEASE_INFO" && intent.diseaseName) {
       reply = buildDiseaseInfoResponse(intent.diseaseName, diseaseDataset);
+      context = reply;
+    } else {
+      reply = buildGeneralResponse(message);
+      context = "General medical assistance query.";
+    }
+
+    // Try to enhance with OpenRouter
+    const enhancedReply = await callOpenRouter(message, context);
+    if (enhancedReply) {
+      reply = enhancedReply;
+      source = "openrouter";
+    } else {
+      source = "dataset-fallback";
     }
 
     return res.json({
       reply,
-      source: intent.intent.toLowerCase()
+      source: source
     });
   } catch (error) {
     return res.status(500).json({
