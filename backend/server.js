@@ -23,13 +23,17 @@ app.use(helmet({
       "connect-src": ["'self'", "https://*.firebaseio.com", "https://*.googleapis.com", "https://openrouter.ai", "https://www.gstatic.com"],
       "img-src": ["'self'", "data:", "https://*.googleusercontent.com", "https://www.gstatic.com", "https://*.firebaseapp.com"],
       "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "cdn.tailwindcss.com"],
-      "font-src": ["'self'", "https://fonts.gstatic.com"]
+      "font-src": ["'self'", "https://fonts.gstatic.com"],
+      "frame-src": ["'self'", "https://*.firebaseapp.com", "https://apis.google.com"]
     }
   }
 }));
 app.use(cors());
 app.use(express.json());
 app.use(express.static(frontendPath));
+
+// Prevent favicon 404
+app.get("/favicon.ico", (_req, res) => res.status(204).end());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
