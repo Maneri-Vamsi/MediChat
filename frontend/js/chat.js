@@ -131,7 +131,11 @@ function createBubble(role, content, meta = role === "user" ? "You" : "AI Assist
 
   const bubble = document.createElement("div");
   bubble.className = "message-bubble";
-  bubble.innerHTML = `<div class="message-meta">${meta}</div><div>${content}</div>`;
+  
+  // Use marked for AI messages to support bold, lists, etc.
+  const renderedContent = role === "ai" && window.marked ? window.marked.parse(content) : content;
+  
+  bubble.innerHTML = `<div class="message-meta">${meta}</div><div class="message-content">${renderedContent}</div>`;
 
   row.appendChild(bubble);
   messages.appendChild(row);

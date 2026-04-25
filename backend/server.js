@@ -19,7 +19,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "'unsafe-inline'", "cdn.tailwindcss.com", "https://*.firebaseapp.com", "https://*.googleapis.com", "https://www.gstatic.com"],
+      "script-src": ["'self'", "'unsafe-inline'", "cdn.tailwindcss.com", "https://*.firebaseapp.com", "https://*.googleapis.com", "https://www.gstatic.com", "https://cdn.jsdelivr.net"],
       "connect-src": ["'self'", "https://*.firebaseio.com", "https://*.googleapis.com", "https://openrouter.ai", "https://www.gstatic.com"],
       "img-src": ["'self'", "data:", "https://*.googleusercontent.com", "https://www.gstatic.com", "https://*.firebaseapp.com"],
       "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "cdn.tailwindcss.com"],
