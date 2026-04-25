@@ -424,11 +424,35 @@ logoutButton.addEventListener("click", async () => {
   window.location.href = "/pages/login.html";
 });
 
+const sidebarOpenTrigger = document.getElementById("sidebar-open-trigger");
+const sidebarOverlay = document.getElementById("sidebar-overlay");
+const chatStatusMobile = document.getElementById("chat-status-mobile");
+
+function updateStatus() {
+  const statusText = baseStatus || "Connected";
+  if (chatStatus) chatStatus.textContent = statusText;
+  if (chatStatusMobile) chatStatusMobile.textContent = statusText;
+}
+
+if (sidebarOpenTrigger) {
+  sidebarOpenTrigger.addEventListener("click", () => {
+    document.body.classList.add("sidebar-open");
+  });
+}
+
+if (sidebarOverlay) {
+  sidebarOverlay.addEventListener("click", () => {
+    document.body.classList.remove("sidebar-open");
+  });
+}
+
 updateStatus();
 
 const user = await requireAuth("/pages/login.html");
 if (user) {
-  profileName.textContent = user.email || "Med Chat User";
+  profileName.textContent = user.displayName || "Med Chat User";
+  syncThread();
+  document.body.classList.add("ready");
   const activeThread = ensureActiveThread();
   renderThread(activeThread);
   renderRecentChats();

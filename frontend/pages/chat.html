@@ -131,11 +131,26 @@
     .message-bubble li {
       margin-bottom: 0.25rem;
     }
+    .sidebar-open aside {
+      transform: translateX(0) !important;
+    }
+    .sidebar-open .sidebar-overlay {
+      display: block !important;
+    }
+    @media (max-width: 768px) {
+      aside {
+        transform: translateX(-100%);
+        box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+      }
+    }
   </style>
 </head>
 <body class="bg-background text-on-surface font-body selection:bg-primary-fixed">
-  <div class="flex h-screen overflow-hidden">
-    <aside class="hidden md:flex flex-col h-screen w-72 bg-[#f7f9fb] p-4 space-y-2 fixed left-0 top-0 z-40 transition-all duration-200">
+  <div class="flex h-screen overflow-hidden relative">
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay fixed inset-0 bg-black/20 backdrop-blur-sm z-30 hidden transition-opacity duration-300" id="sidebar-overlay"></div>
+
+    <aside class="flex flex-col h-screen w-72 bg-[#f7f9fb] p-4 space-y-2 fixed left-0 top-0 z-40 transition-transform duration-300 ease-in-out md:translate-x-0">
       <div class="flex items-center gap-3 px-4 py-6">
         <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20 overflow-hidden">
           <img alt="Med Chat logo" class="w-full h-full object-cover" src="/assets/logo.png"/>
@@ -178,7 +193,21 @@
     </aside>
 
     <main class="flex-1 md:ml-72 flex flex-col h-screen min-h-0 relative bg-surface">
-      <div class="absolute top-6 right-8 z-30">
+      <!-- Mobile Header -->
+      <header class="md:hidden flex items-center justify-between p-4 bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-outline-variant/10">
+        <div class="flex items-center gap-3">
+          <button class="p-2 -ml-2 text-slate-600 active:scale-95 transition-all" id="sidebar-open-trigger">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white overflow-hidden">
+            <img alt="Med Chat logo" class="w-full h-full object-cover" src="/assets/logo.png"/>
+          </div>
+          <h2 class="font-headline font-bold text-sm">Dr. Curator</h2>
+        </div>
+        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest" id="chat-status-mobile">Connecting...</p>
+      </header>
+
+      <div class="absolute top-6 right-8 z-30 hidden md:block">
         <p class="text-xs text-slate-500 font-semibold" id="chat-status">Connecting...</p>
       </div>
 
@@ -192,20 +221,20 @@
         </div>
       </div>
 
-      <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-20 pointer-events-none">
-        <div class="max-w-4xl mx-auto w-full space-y-6 pointer-events-auto">
+      <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-12 md:pt-20 pointer-events-none">
+        <div class="max-w-4xl mx-auto w-full space-y-4 md:space-y-6 pointer-events-auto">
           <div class="relative group">
-            <div class="absolute inset-0 bg-primary/5 rounded-full blur-xl group-focus-within:bg-primary/10 transition-all"></div>
-            <div class="relative flex items-center bg-surface-container-lowest border border-outline-variant/20 rounded-full p-2 pr-4 shadow-xl shadow-on-surface/5 focus-within:border-primary transition-all">
-              <button class="p-3 text-slate-400 hover:text-primary transition-colors rounded-full disabled:opacity-40 disabled:cursor-not-allowed" id="voice-toggle-button" type="button" aria-label="Start voice input">
+            <div class="absolute inset-0 bg-primary/5 rounded-2xl md:rounded-full blur-xl group-focus-within:bg-primary/10 transition-all"></div>
+            <div class="relative flex items-center bg-surface-container-lowest/90 backdrop-blur-xl border border-outline-variant/20 rounded-2xl md:rounded-full p-1.5 md:p-2 pr-3 md:pr-4 shadow-xl shadow-on-surface/5 focus-within:border-primary transition-all">
+              <button class="p-2 md:p-3 text-slate-400 hover:text-primary transition-colors rounded-full disabled:opacity-40 disabled:cursor-not-allowed" id="voice-toggle-button" type="button" aria-label="Start voice input">
                 <span class="material-symbols-outlined" id="voice-toggle-icon">mic</span>
               </button>
-
-              <button class="p-3 text-slate-400 hover:text-primary transition-colors rounded-full" id="tts-mute-button" type="button" aria-label="Mute/Unmute voice">
+              
+              <button class="p-2 md:p-3 text-slate-400 hover:text-primary transition-colors rounded-full" id="tts-mute-button" type="button" aria-label="Mute/Unmute voice">
                 <span class="material-symbols-outlined" id="tts-mute-icon">volume_up</span>
               </button>
-              <input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface py-4 px-2 placeholder:text-slate-400 font-medium" id="chat-input" placeholder="Ask your medical question..." type="text"/>
-              <button class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all" id="send-button" type="button">
+              <input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface py-3 md:py-4 px-2 placeholder:text-slate-400 font-medium text-sm md:text-base" id="chat-input" placeholder="Ask your medical question..." type="text"/>
+              <button class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all" id="send-button" type="button">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
               </button>
             </div>
