@@ -20,13 +20,15 @@ app.use(helmet({
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       "script-src": ["'self'", "'unsafe-inline'", "cdn.tailwindcss.com", "https://*.firebaseapp.com", "https://*.googleapis.com", "https://www.gstatic.com", "https://cdn.jsdelivr.net", "https://apis.google.com"],
-      "connect-src": ["'self'", "https://*.firebaseio.com", "https://*.googleapis.com", "https://openrouter.ai", "https://www.gstatic.com"],
+      "connect-src": ["'self'", "https://*.firebaseio.com", "https://*.googleapis.com", "https://openrouter.ai", "https://www.gstatic.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com"],
       "img-src": ["'self'", "data:", "https://*.googleusercontent.com", "https://www.gstatic.com", "https://*.firebaseapp.com"],
       "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "cdn.tailwindcss.com"],
       "font-src": ["'self'", "https://fonts.gstatic.com"],
       "frame-src": ["'self'", "https://*.firebaseapp.com", "https://apis.google.com"]
     }
-  }
+  },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  crossOriginEmbedderPolicy: false
 }));
 app.use(cors());
 app.use(express.json());
